@@ -3,6 +3,17 @@
 ## TL;DR
 The app is done and works end to end with **one command: `./run.sh`**. It uses TabPFN on CPU with no login, no API keys, and no network once the model is downloaded. On the 90-day sample data, TabPFN beat the same-weekday baseline: **MAE 3.33 vs 3.62 plates (7.9% closer)**, and 13–18% closer on 5 fresh synthetic datasets. All numbers come from real runs (`scripts/evaluate.py`), and all of it is **synthetic sample data**, not Simran's.
 
+## ⚠️ First: the branch is NOT on GitHub yet
+Pushing was refused (HTTP 403: Claude doesn't have GitHub access to `ms-singh83/RasoiIQ`). Everything is committed locally, and the whole branch is in **`RasoiIQ-branch.bundle`**, which I sent to you in the Claude app. Either:
+- reconnect GitHub at https://claude.ai/connect-github (and install the Claude GitHub App on the repo), then tell me "push", **or**
+- push it yourself from the bundle:
+  ```bash
+  git clone https://github.com/ms-singh83/RasoiIQ && cd RasoiIQ
+  git fetch /path/to/RasoiIQ-branch.bundle claude/demand-forecaster-hacktoberfest-k6kp0q:claude/demand-forecaster-hacktoberfest-k6kp0q
+  git checkout claude/demand-forecaster-hacktoberfest-k6kp0q && git push -u origin HEAD
+  ```
+This cloud session's container is temporary, so please do one of these soon.
+
 ## What works (verified tonight)
 - [x] **Stack check first, as you asked:** torch 2.2.2 + tabpfn 6.4.1 + numpy 1.26.4 on Python 3.11. A real tiny TabPFN prediction ran on CPU before any app code was written.
 - [x] **Every dependency has an Intel-Mac wheel** for Python 3.11 (checked by cross-resolving for `x86_64-apple-darwin`). See `requirements-macos-intel.lock.txt`.
@@ -32,7 +43,7 @@ The app is done and works end to end with **one command: `./run.sh`**. It uses T
 1. **On the iMac:**
    ```bash
    brew install python@3.11      # if `python3.11 --version` fails
-   git clone https://github.com/ms-singh83/RasoiIQ && cd RasoiIQ
+   cd RasoiIQ   # after getting the branch (see the top of this file)
    git checkout claude/demand-forecaster-hacktoberfest-k6kp0q   # until merged
    ./run.sh
    ```
