@@ -1,0 +1,13 @@
+# Verified on CPU with a real test prediction. These pins resolve to Intel macOS
+# (x86_64) wheels for Python 3.11/3.12. torch 2.2.2 is the last PyTorch with
+# Intel Mac builds, so everything else is pinned to work with it.
+torch==2.2.2
+numpy==1.26.4
+tabpfn==6.4.1
+pandas==3.0.6
+scikit-learn==1.9.1
+scipy==1.17.1
+fastapi==0.142.2
+uvicorn==0.54.0
+python-multipart==0.0.32
+httpx==0.28.1
