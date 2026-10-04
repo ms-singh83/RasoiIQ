@@ -1,0 +1,286 @@
+{
+ "python": "3.11.15",
+ "platform": "Linux-6.18.44-fc-v64-x86_64-with-glibc2.39",
+ "holdout_days": 28,
+ "refit_every": 7,
+ "runs": [
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-06",
+   "end": "2026-10-03",
+   "n_predictions": 135,
+   "baseline": {
+    "mae": 3.616049382716049,
+    "wape": 30.28329197684036
+   },
+   "tabpfn": {
+    "mae": 3.3316391715296994,
+    "wape": 27.901444674721425
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 17.074074074074073,
+     "baseline_mae": 3.75,
+     "tabpfn_mae": 3.4880860999778465
+    },
+    "Dal Makhani": {
+     "actual_avg": 12.296296296296296,
+     "baseline_mae": 3.672839506172839,
+     "tabpfn_mae": 3.507940751534921
+    },
+    "Gajar Halwa": {
+     "actual_avg": 5.814814814814815,
+     "baseline_mae": 2.540123456790124,
+     "tabpfn_mae": 2.328184030674122
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 10.962962962962964,
+     "baseline_mae": 3.441358024691358,
+     "tabpfn_mae": 3.195678145797164
+    },
+    "Rajma Chawal": {
+     "actual_avg": 13.555555555555555,
+     "baseline_mae": 4.675925925925926,
+     "tabpfn_mae": 4.138306829664442
+    }
+   },
+   "label": "sample_orders.csv (sample)",
+   "seconds": 18.5,
+   "days": 90,
+   "items": 5
+  },
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-06",
+   "end": "2026-10-03",
+   "n_predictions": 140,
+   "baseline": {
+    "mae": 3.7702380952380956,
+    "wape": 32.0871327254306
+   },
+   "tabpfn": {
+    "mae": 3.1065017393657137,
+    "wape": 26.438312675452885
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 18.607142857142858,
+     "baseline_mae": 4.065476190476191,
+     "tabpfn_mae": 3.543166024344308
+    },
+    "Dal Makhani": {
+     "actual_avg": 12.642857142857142,
+     "baseline_mae": 4.556547619047619,
+     "tabpfn_mae": 3.3372987679072788
+    },
+    "Gajar Halwa": {
+     "actual_avg": 6.357142857142857,
+     "baseline_mae": 3.9970238095238098,
+     "tabpfn_mae": 3.115949579647609
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 8.928571428571429,
+     "baseline_mae": 2.511904761904762,
+     "tabpfn_mae": 2.230077385902405
+    },
+    "Rajma Chawal": {
+     "actual_avg": 12.214285714285714,
+     "baseline_mae": 3.720238095238095,
+     "tabpfn_mae": 3.3060169390269687
+    }
+   },
+   "label": "sample seed 2001",
+   "seconds": 13.5,
+   "days": 90,
+   "items": 5
+  },
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-06",
+   "end": "2026-10-03",
+   "n_predictions": 130,
+   "baseline": {
+    "mae": 3.608333333333334,
+    "wape": 32.12899543378996
+   },
+   "tabpfn": {
+    "mae": 3.047460815539727,
+    "wape": 27.13492506987428
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 18.346153846153847,
+     "baseline_mae": 4.1089743589743595,
+     "tabpfn_mae": 2.84518916790302
+    },
+    "Dal Makhani": {
+     "actual_avg": 12.076923076923077,
+     "baseline_mae": 3.2211538461538463,
+     "tabpfn_mae": 3.0336816861079288
+    },
+    "Gajar Halwa": {
+     "actual_avg": 5.6923076923076925,
+     "baseline_mae": 3.019230769230769,
+     "tabpfn_mae": 2.447271929337428
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 8.653846153846153,
+     "baseline_mae": 3.275641025641026,
+     "tabpfn_mae": 3.0732835072737474
+    },
+    "Rajma Chawal": {
+     "actual_avg": 11.384615384615385,
+     "baseline_mae": 4.416666666666666,
+     "tabpfn_mae": 3.83787778707651
+    }
+   },
+   "label": "sample seed 2002",
+   "seconds": 13.2,
+   "days": 90,
+   "items": 5
+  },
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-06",
+   "end": "2026-10-03",
+   "n_predictions": 135,
+   "baseline": {
+    "mae": 4.340740740740741,
+    "wape": 37.18274111675127
+   },
+   "tabpfn": {
+    "mae": 3.658028996432269,
+    "wape": 31.334639246088596
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 17.22222222222222,
+     "baseline_mae": 5.87037037037037,
+     "tabpfn_mae": 4.376235644022624
+    },
+    "Dal Makhani": {
+     "actual_avg": 12.148148148148149,
+     "baseline_mae": 3.459876543209876,
+     "tabpfn_mae": 2.8180553294994213
+    },
+    "Gajar Halwa": {
+     "actual_avg": 6.703703703703703,
+     "baseline_mae": 4.395061728395062,
+     "tabpfn_mae": 3.9158559287035906
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 9.481481481481481,
+     "baseline_mae": 4.200617283950617,
+     "tabpfn_mae": 4.000042880022967
+    },
+    "Rajma Chawal": {
+     "actual_avg": 12.814814814814815,
+     "baseline_mae": 3.7777777777777777,
+     "tabpfn_mae": 3.1799551999127424
+    }
+   },
+   "label": "sample seed 2003",
+   "seconds": 13.0,
+   "days": 90,
+   "items": 5
+  },
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-06",
+   "end": "2026-10-03",
+   "n_predictions": 140,
+   "baseline": {
+    "mae": 3.9089285714285715,
+    "wape": 32.00292397660819
+   },
+   "tabpfn": {
+    "mae": 3.323980520878519,
+    "wape": 27.213875609531733
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 17.142857142857142,
+     "baseline_mae": 3.458333333333333,
+     "tabpfn_mae": 3.652029071535383
+    },
+    "Dal Makhani": {
+     "actual_avg": 13.571428571428571,
+     "baseline_mae": 5.294642857142857,
+     "tabpfn_mae": 4.018042053495135
+    },
+    "Gajar Halwa": {
+     "actual_avg": 6.535714285714286,
+     "baseline_mae": 3.6904761904761902,
+     "tabpfn_mae": 2.7806141823530197
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 10.571428571428571,
+     "baseline_mae": 4.008928571428571,
+     "tabpfn_mae": 3.1297679798943654
+    },
+    "Rajma Chawal": {
+     "actual_avg": 13.25,
+     "baseline_mae": 3.0922619047619047,
+     "tabpfn_mae": 3.039449317114694
+    }
+   },
+   "label": "sample seed 2004",
+   "seconds": 13.1,
+   "days": 90,
+   "items": 5
+  },
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-06",
+   "end": "2026-10-03",
+   "n_predictions": 140,
+   "baseline": {
+    "mae": 4.177976190476191,
+    "wape": 33.32858499525167
+   },
+   "tabpfn": {
+    "mae": 3.617701267344611,
+    "wape": 28.85915540901684
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 18.321428571428573,
+     "baseline_mae": 5.238095238095238,
+     "tabpfn_mae": 4.347167730331421
+    },
+    "Dal Makhani": {
+     "actual_avg": 12.571428571428571,
+     "baseline_mae": 4.199404761904762,
+     "tabpfn_mae": 3.7709252493722096
+    },
+    "Gajar Halwa": {
+     "actual_avg": 6.785714285714286,
+     "baseline_mae": 3.738095238095238,
+     "tabpfn_mae": 3.261659038918359
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 10.535714285714286,
+     "baseline_mae": 3.5089285714285707,
+     "tabpfn_mae": 3.004271524293082
+    },
+    "Rajma Chawal": {
+     "actual_avg": 14.464285714285714,
+     "baseline_mae": 4.205357142857143,
+     "tabpfn_mae": 3.7044827938079834
+    }
+   },
+   "label": "sample seed 2005",
+   "seconds": 13.3,
+   "days": 90,
+   "items": 5
+  }
+ ],
+ "tabpfn": "6.4.1",
+ "torch": "2.2.2+cu121"
+}

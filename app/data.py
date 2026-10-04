@@ -27,7 +27,7 @@ class DataError(ValueError):
 
 @dataclass
 class OrdersData:
-    daily: pd.DataFrame  # date, item, quantity on a full date x item grid
+    daily: pd.DataFrame  # date, item, quantity on a full date x item grid (NaN = kitchen closed)
     items: list[str]
     start: date
     end: date
@@ -102,8 +102,15 @@ def load_orders(raw: bytes | str) -> OrdersData:
 
     grid = pd.MultiIndex.from_product([pd.date_range(start, end, freq="D"), items], names=["date", "item"])
     daily = agg.set_index(["date", "item"]).reindex(grid, fill_value=0.0).reset_index()
-    missing_days = n_days - agg["date"].nunique()
-    if missing_days:
-        warnings.append(f"{missing_days} day(s) had no orders at all; counted as 0.")
+    # A day with zero orders across every dish means the kitchen was closed, not
+    # that nobody was hungry. Mark it missing so it doesn't drag down lags/averages.
+    totals = daily.groupby("date")["quantity"].transform("sum")
+    closed = totals == 0
+    daily.loc[closed, "quantity"] = float("nan")
+    n_closed = daily.loc[closed, "date"].nunique()
+    if n_closed:
+        warnings.append(f"{n_closed} day(s) had no orders at all; treated as kitchen closed and left out.")
+    if daily["quantity"].notna().groupby(daily["date"]).any().sum() < MIN_DAYS:
+        raise DataError(f"Fewer than {MIN_DAYS} days with any orders. RasoiIQ needs more history.")
     return OrdersData(daily=daily, items=items, start=start.date(), end=end.date(),
                       special_dates=special, warnings=warnings)

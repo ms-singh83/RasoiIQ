@@ -187,20 +187,20 @@ def run_forecast(data: OrdersData, tomorrow_special: bool = False,
             p10 = p50 = p90 = None
             prep = int(math.ceil(b * 1.1 - 1e-9))
         items.append(ItemForecast(item, b, p10, p50, p90, prep,
-                                  float(lw["quantity"].iloc[0]) if len(lw) else None))
+                                  _num(float(lw["quantity"].iloc[0])) if len(lw) else None))
 
     return ForecastResult(target, items, model_used, note, bt, _chart(feats, bt, items, target), timings)
 
 
 def _chart(feats: pd.DataFrame, bt: dict | None, items: list[ItemForecast], target: date) -> dict:
     """Last 28 days of actual orders, backtest predictions, and tomorrow (per item)."""
-    known = feats[feats["quantity"].notna()]
+    known = feats[feats["date"] < pd.Timestamp(target)]
     dates = sorted(known["date"].unique())[-28:]
     rows = bt["rows"].set_index(["date", "item"]) if bt else None
     series = {}
     for it in items:
         actual = known[known["item"] == it.item].set_index("date")["quantity"]
-        entry = {"actual": [float(actual.get(d, 0.0)) for d in dates]}
+        entry = {"actual": [_num(actual.get(d)) for d in dates]}
         if rows is not None:
             for col in ("baseline", "tabpfn"):
                 if col in rows:

@@ -55,3 +55,27 @@ def test_sample_file_is_under_row_limit():
     from app.config import SAMPLE_ORDERS
     d = load_orders(SAMPLE_ORDERS.read_bytes())
     assert len(d.daily) < MAX_ROWS and (d.end - d.start).days + 1 == 90
+
+
+def test_all_zero_day_is_treated_as_closed():
+    csv = make_csv(days=30).replace("2026-01-20,Dal,", "2026-01-20,Dal,0#").replace("2026-01-20,Rajma,", "2026-01-20,Rajma,0#")
+    csv = "\n".join(l.split("#")[0] + ("," if "#" in l else "") for l in csv.splitlines())
+    d = load_orders(csv)
+    day = d.daily[d.daily["date"] == "2026-01-20"]
+    assert day["quantity"].isna().all()
+    assert any("kitchen closed" in w for w in d.warnings)
+    # a single dish at zero on an open day is a real zero
+    csv2 = make_csv(days=30).replace("2026-01-21,Dal,", "2026-01-21,Dal,0#")
+    csv2 = "\n".join(l.split("#")[0] + ("," if "#" in l else "") for l in csv2.splitlines())
+    d2 = load_orders(csv2)
+    assert d2.daily.set_index(["date", "item"]).loc[("2026-01-21", "Dal"), "quantity"] == 0
+
+
+def test_closed_day_does_not_zero_out_features():
+    from app.features import build_features
+    rows = make_csv(days=40).splitlines()
+    rows = [r for r in rows if not r.startswith("2026-01-30")]  # nothing recorded that day
+    d = load_orders("\n".join(rows))
+    f = build_features(d.daily, d.items)
+    nxt = f[(f["date"] == "2026-01-31") & (f["item"] == "Dal")].iloc[0]
+    assert nxt["mean_7"] > 5  # average ignores the closed day instead of counting a 0
