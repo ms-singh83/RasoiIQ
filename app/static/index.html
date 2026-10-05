@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RasoiIQ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23b4461b%22/%3E%3C/svg%3E">
+<meta name="description" content="Tomorrow's order forecast for a home kitchen, powered by TabPFN, running on your own laptop.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --surface-1: #fcfcfb;
+  --border: #e4e1d8;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #7a7873;
+  --accent: #b4461b;
+  --accent-ink: #ffffff;
+  --grid: #ebe8e1;
+  --series-actual: #2a78d6;
+  --series-tabpfn: #eb6834;
+  --series-baseline: #1baf7a;
+  --banner-bg: #fff4d6;
+  --banner-ink: #5c4300;
+  --warn-bg: #fdecea;
+  --warn-ink: #7a1f1a;
+  --good: #1a7f37;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface-1: #1a1a19;
+    --border: #2e2d2a;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #96958c;
+    --accent: #e0703f;
+    --accent-ink: #120a05;
+    --grid: #2a2927;
+    --series-actual: #3987e5;
+    --series-tabpfn: #d95926;
+    --series-baseline: #199e70;
+    --banner-bg: #3a2f10;
+    --banner-ink: #ffe3a3;
+    --warn-bg: #3d1916;
+    --warn-ink: #ffc9c4;
+    --good: #57c46f;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface-1: #1a1a19; --border: #2e2d2a;
+  --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #96958c;
+  --accent: #e0703f; --accent-ink: #120a05; --grid: #2a2927;
+  --series-actual: #3987e5; --series-tabpfn: #d95926; --series-baseline: #199e70;
+  --banner-bg: #3a2f10; --banner-ink: #ffe3a3; --warn-bg: #3d1916; --warn-ink: #ffc9c4; --good: #57c46f;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--text-primary);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+header { padding: 8px 0 4px; }
+h1 { font-size: 1.75rem; margin: 0; letter-spacing: -0.01em; }
+h1 span { color: var(--accent); }
+.tagline { margin: 2px 0 0; color: var(--text-secondary); }
+.friend { margin: 6px 0 0; font-size: .9rem; color: var(--text-muted); }
+h2 { font-size: 1.1rem; margin: 0 0 4px; }
+.sub { margin: 0 0 12px; color: var(--text-secondary); font-size: .92rem; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-top: 14px; }
+.banner { background: var(--banner-bg); color: var(--banner-ink); border-radius: 10px; padding: 10px 12px; font-size: .92rem; margin-top: 14px; }
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 12px; font-size: .92rem; margin-top: 10px; }
+.hidden { display: none !important; }
+label.file { display: block; border: 1.5px dashed var(--border); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; color: var(--text-secondary); }
+label.file:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+label.file input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: .95rem; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 10px; padding: 12px 18px; font-size: 1rem; font-weight: 600; min-height: 44px; cursor: pointer; }
+button.primary:disabled { opacity: .6; cursor: progress; }
+a { color: var(--accent); }
+.small { font-size: .85rem; color: var(--text-muted); }
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; vertical-align: -3px; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+.dishes { list-style: none; margin: 0; padding: 0; }
+.dish { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+.dish:first-child { border-top: 0; }
+.dish .name { font-weight: 600; }
+.dish .prep { grid-row: span 2; text-align: right; font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.dish .prep small { display: block; font-size: .75rem; font-weight: 500; color: var(--text-muted); }
+.dish .meta { font-size: .85rem; color: var(--text-secondary); }
+.pill { display: inline-block; font-size: .78rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary); }
+pre.plan { white-space: pre-wrap; font: inherit; margin: 0; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip { border: 1px solid var(--border); background: transparent; color: var(--text-secondary); border-radius: 999px; padding: 6px 12px; font-size: .88rem; min-height: 36px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .85rem; color: var(--text-secondary); margin: 4px 0 8px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 6px; }
+.chart-wrap { position: relative; }
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--text-muted); font-size: 12px; font-family: inherit; }
+.tip { position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; font-size: .8rem; box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap; }
+.tip b { color: var(--text-primary); }
+.tip .k { display: inline-block; width: 10px; height: 2px; vertical-align: middle; margin-right: 5px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.stat .v { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: .82rem; color: var(--text-secondary); }
+.verdict { margin: 12px 0 0; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 6px 4px; border-top: 1px solid var(--border); }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--text-secondary); font-weight: 600; }
+details summary { cursor: pointer; color: var(--text-secondary); font-size: .9rem; margin-top: 10px; }
+.table-scroll { overflow-x: auto; }
+footer { margin-top: 22px; font-size: .88rem; color: var(--text-secondary); }
+footer p { margin: 6px 0; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Rasoi<span>IQ</span></h1>
+    <p class="tagline">Kal kitna banana hai? Tomorrow's orders, dish by dish.</p>
+    <p class="friend" id="friendLine">Built for a friend's home kitchen.</p>
+  </header>
+
+  <div id="sampleBanner" class="banner hidden" role="note">
+    <b>Sample data.</b> These orders are generated for the demo, not real sales. Upload your own CSV below to see your forecast.
+  </div>
+
+  <section class="card" aria-labelledby="uploadTitle">
+    <h2 id="uploadTitle">Your orders</h2>
+    <p class="sub">A CSV with <code>date,item,quantity</code> (one row per dish per day). <a href="/api/sample.csv" download>Download the sample</a> to see the format.</p>
+    <label class="file" id="fileLabel">
+      <input type="file" id="file" accept=".csv,text/csv">
+      <span id="fileText">Tap to choose a CSV</span>
+    </label>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="special"> Kal koi tyohar ya party hai? (festival or party tomorrow)</label>
+    </div>
+    <div class="row">
+      <button class="primary" id="go">Forecast banao</button>
+      <span id="status" class="small" aria-live="polite"></span>
+    </div>
+    <div id="error" class="warn hidden" role="alert"></div>
+  </section>
+
+  <div id="results" class="hidden">
+    <section class="card" aria-labelledby="tmrTitle">
+      <h2 id="tmrTitle">Tomorrow</h2>
+      <p class="sub" id="tmrSub"></p>
+      <div id="modelNote" class="warn hidden"></div>
+      <ul class="dishes" id="dishes"></ul>
+      <p class="small">Prep = TabPFN's middle guess plus a small buffer (halfway to its busy-day number). Range = 10% to 90% likely.</p>
+    </section>
+
+    <section class="card" aria-labelledby="planTitle">
+      <h2 id="planTitle">Prep and shopping list</h2>
+      <p class="sub" id="planSub"></p>
+      <div id="planNote" class="warn hidden"></div>
+      <pre class="plan" id="plan"></pre>
+    </section>
+
+    <section class="card" aria-labelledby="chartTitle">
+      <h2 id="chartTitle">Past vs predicted</h2>
+      <p class="sub">Last 4 weeks. On these days each model only saw orders up to the day before, then tomorrow's forecast at the end.</p>
+      <div class="chips" id="chips" role="group" aria-label="Choose a dish"></div>
+      <div class="legend" aria-hidden="true">
+        <span><i style="border-color:var(--series-actual)"></i>Actual orders</span>
+        <span><i style="border-color:var(--series-tabpfn)"></i>TabPFN</span>
+        <span><i style="border-color:var(--series-baseline);border-top-style:dashed"></i>Same-weekday average</span>
+      </div>
+      <div class="chart-wrap" id="chartWrap">
+        <svg class="chart" id="chart" role="img" aria-labelledby="chartTitle"></svg>
+        <div class="tip hidden" id="tip"></div>
+      </div>
+      <details>
+        <summary>Show as a table</summary>
+        <div class="table-scroll"><table id="chartTable"></table></div>
+      </details>
+    </section>
+
+    <section class="card" aria-labelledby="accTitle">
+      <h2 id="accTitle">Is TabPFN better than guessing?</h2>
+      <p class="sub" id="accSub"></p>
+      <div class="stats">
+        <div class="stat"><div class="v" id="tabMae">-</div><div class="l">TabPFN: plates off per dish per day</div></div>
+        <div class="stat"><div class="v" id="baseMae">-</div><div class="l">Same-weekday average: plates off</div></div>
+      </div>
+      <p class="verdict" id="verdict"></p>
+      <details>
+        <summary>Per dish</summary>
+        <div class="table-scroll"><table id="accTable"></table></div>
+      </details>
+    </section>
+
+    <div id="warnings"></div>
+  </div>
+
+  <footer>
+    <p><b>Your data stays on this laptop.</b> The forecast runs on <a href="https://github.com/PriorLabs/TabPFN">TabPFN</a>, an open tabular foundation model from Prior Labs, on your own CPU. No account, no monthly bill, and it works offline once the model is downloaded.</p>
+    <p id="gemmaLine" class="hidden">Hinglish rewrite by Gemma: only the finished prep list is sent to Google, never your order history.</p>
+    <p class="small"><b>Built with PriorLabs-TabPFN.</b> TabPFN-2 weights are used under the <a href="https://huggingface.co/Prior-Labs/TabPFN-v2-reg/blob/main/LICENSE.txt">Prior Labs License</a> (Apache 2.0 with attribution).</p>
+    <p id="themeLine" class="small"></p>
+  </footer>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (v, d = 0) => (v == null ? "-" : Number(v).toFixed(d));
+let state = { data: null, item: null };
+
+async function loadConfig() {
+  try {
+    const c = await (await fetch("/api/config")).json();
+    $("friendLine").textContent = `Built for ${c.friend}'s home kitchen in ${c.city}, by a friend.`;
+    $("themeLine").textContent = `Made for the DEV Hacktoberfest 2026 challenge, theme: ${c.theme}.`;
+    $("gemmaLine").classList.toggle("hidden", !c.gemma_enabled);
+  } catch (e) { /* page still works without it */ }
+}
+
+$("file").addEventListener("change", () => {
+  const f = $("file").files[0];
+  $("fileText").textContent = f ? f.name : "Tap to choose a CSV";
+});
+$("go").addEventListener("click", () => run(true));
+
+async function run(fromButton) {
+  const fd = new FormData();
+  const f = $("file").files[0];
+  if (f && fromButton) fd.append("file", f);
+  fd.append("tomorrow_special", $("special").checked ? "true" : "false");
+  $("go").disabled = true;
+  $("error").classList.add("hidden");
+  $("status").innerHTML = '<span class="spinner"></span>TabPFN is thinking on your CPU. The first run can take a minute.';
+  try {
+    const r = await fetch("/api/forecast", { method: "POST", body: fd });
+    const body = await r.json();
+    if (!r.ok) throw new Error(body.detail || "Something went wrong.");
+    render(body);
+    $("status").textContent = body.timings && body.timings.forecast_s != null
+      ? `Done. TabPFN took ${fmt(body.timings.forecast_s, 1)}s for tomorrow, ${fmt(body.timings.backtest_s, 1)}s for the accuracy check.`
+      : "Done.";
+  } catch (e) {
+    $("error").textContent = e.message;
+    $("error").classList.remove("hidden");
+    $("status").textContent = "";
+  } finally {
+    $("go").disabled = false;
+  }
+}
+
+function render(d) {
+  state.data = d;
+  $("results").classList.remove("hidden");
+  $("sampleBanner").classList.toggle("hidden", !d.is_sample);
+
+  const date = new Date(d.target_date + "T00:00:00");
+  const nice = date.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+  $("tmrSub").innerHTML = `${nice}${d.festival ? ` · <span class="pill">${esc(d.festival)}</span>` : ""} · from ${esc(d.source_name)} (${d.data_range.days} days)`;
+  $("modelNote").textContent = d.model_note || "";
+  $("modelNote").classList.toggle("hidden", !d.model_note);
+
+  $("dishes").innerHTML = d.items.map((it) => {
+    const range = it.p10 != null ? `likely ${Math.floor(it.p10)} to ${Math.ceil(it.p90)}` : `baseline ${fmt(it.baseline, 1)}`;
+    const lw = it.last_week_same_day != null ? ` · last ${d.target_day} ${fmt(it.last_week_same_day)}` : "";
+    return `<li class="dish"><span class="name">${esc(it.item)}</span>
+      <span class="prep">${it.prep}<small>plates</small></span>
+      <span class="meta">${range}${lw}</span></li>`;
+  }).join("");
+
+  $("planSub").textContent = d.plan.source === "template"
+    ? "Built from the forecast with simple recipe math."
+    : `Rewritten in Hinglish by ${d.plan.source.replace("gemma:", "Gemma ")}. Numbers checked against the forecast.`;
+  $("planNote").textContent = d.plan.note || "";
+  $("planNote").classList.toggle("hidden", !d.plan.note);
+  $("plan").textContent = d.plan.text;
+
+  const items = d.items.map((i) => i.item);
+  if (!items.includes(state.item)) state.item = items[0];
+  $("chips").innerHTML = items.map((i) => `<button class="chip" aria-pressed="${i === state.item}" data-item="${esc(i)}">${esc(i)}</button>`).join("");
+  $("chips").querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
+    state.item = b.dataset.item;
+    $("chips").querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    drawChart();
+  }));
+  drawChart();
+  renderAccuracy(d.backtest);
+
+  $("warnings").innerHTML = (d.warnings || []).map((w) => `<div class="warn">${esc(w)}</div>`).join("");
+}
+
+function renderAccuracy(bt) {
+  if (!bt) return;
+  $("accSub").textContent = `We hid the last ${bt.holdout_days} days (${bt.start} to ${bt.end}) and asked each method to forecast them one day at a time. Lower is better.`;
+  $("baseMae").textContent = fmt(bt.baseline.mae, 2);
+  if (bt.tabpfn) {
+    $("tabMae").textContent = fmt(bt.tabpfn.mae, 2);
+    const gain = (1 - bt.tabpfn.mae / bt.baseline.mae) * 100;
+    $("verdict").innerHTML = gain >= 0
+      ? `<span style="color:var(--good)">TabPFN was ${fmt(gain, 1)}% closer</span> than the same-weekday average on these days.`
+      : `The same-weekday average was ${fmt(-gain, 1)}% closer than TabPFN on these days. More history usually helps TabPFN.`;
+  } else {
+    $("tabMae").textContent = "-";
+    $("verdict").textContent = "TabPFN did not run, so only the baseline is shown.";
+  }
+  const rows = Object.entries(bt.per_item).map(([k, v]) =>
+    `<tr><td>${esc(k)}</td><td>${fmt(v.actual_avg, 1)}</td><td>${fmt(v.tabpfn_mae, 2)}</td><td>${fmt(v.baseline_mae, 2)}</td></tr>`).join("");
+  $("accTable").innerHTML = `<tr><th>Dish</th><th>Avg sold</th><th>TabPFN off</th><th>Baseline off</th></tr>${rows}`;
+}
+
+function drawChart() {
+  const d = state.data, s = d.chart.series[state.item], dates = d.chart.dates;
+  const n = dates.length + 1; // + tomorrow
+  const W = Math.max(280, Math.round($("chartWrap").clientWidth)), H = Math.round(Math.min(300, Math.max(200, W * 0.6))), m = { l: 30, r: 10, t: 12, b: 24 };
+  const vals = [...s.actual, ...(s.tabpfn || []), ...(s.baseline || []), s.tomorrow, s.tomorrow_high].filter((v) => v != null);
+  const yMax = niceMax(Math.max(...vals, 1));
+  const x = (i) => m.l + (i * (W - m.l - m.r)) / (n - 1);
+  const y = (v) => H - m.b - (v / yMax) * (H - m.t - m.b);
+  const path = (arr) => arr.map((v, i) => (v == null ? null : [x(i), y(v)])).reduce((acc, p, i, a) => {
+    if (!p) return acc;
+    return acc + (i === 0 || !a[i - 1] ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1);
+  }, "");
+  let g = "";
+  const ticks = 4;
+  for (let k = 0; k <= ticks; k++) {
+    const v = (yMax * k) / ticks;
+    g += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}</text>`;
+  }
+  (W < 420 ? [0, 14] : [0, 7, 14, 21]).forEach((i) => { if (i < dates.length) g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${short(dates[i])}</text>`; });
+  g += `<text x="${x(n - 1)}" y="${H - 8}" text-anchor="end">Tomorrow</text>`;
+  g += `<line x1="${x(n - 1.5)}" x2="${x(n - 1.5)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--grid)" stroke-dasharray="3 3"/>`;
+  if (s.baseline) g += `<path d="${path(s.baseline)}" fill="none" stroke="var(--series-baseline)" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>`;
+  g += `<path d="${path(s.actual)}" fill="none" stroke="var(--series-actual)" stroke-width="2" stroke-linejoin="round"/>`;
+  if (s.tabpfn) g += `<path d="${path(s.tabpfn)}" fill="none" stroke="var(--series-tabpfn)" stroke-width="2" stroke-linejoin="round"/>`;
+  const tx = x(n - 1);
+  if (s.tomorrow_low != null) {
+    g += `<line x1="${tx}" x2="${tx}" y1="${y(s.tomorrow_low)}" y2="${y(s.tomorrow_high)}" stroke="var(--series-tabpfn)" stroke-width="2" stroke-linecap="round"/>`;
+  }
+  g += `<circle cx="${tx}" cy="${y(s.tomorrow)}" r="5" fill="var(--series-tabpfn)" stroke="var(--surface-1)" stroke-width="2"/>`;
+  g += `<line id="cross" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="var(--text-muted)" stroke-width="1" visibility="hidden"/>`;
+  g += `<rect id="hit" x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent"/>`;
+  const svg = $("chart");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("aria-label", `${state.item}: actual orders over the last 4 weeks with TabPFN and baseline predictions; tomorrow TabPFN predicts ${fmt(s.tomorrow, 1)}.`);
+  svg.innerHTML = g;
+
+  const tip = $("tip"), cross = svg.querySelector("#cross");
+  const show = (evt) => {
+    const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const i = Math.max(0, Math.min(n - 1, Math.round(((p.x - m.l) / (W - m.l - m.r)) * (n - 1))));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+    const k = (c) => `<span class="k" style="background:${c}"></span>`;
+    tip.innerHTML = i === n - 1
+      ? `<b>Tomorrow</b><br>${k("var(--series-tabpfn)")}TabPFN ${fmt(s.tomorrow, 1)}${s.tomorrow_low != null ? ` (${fmt(s.tomorrow_low, 0)} to ${fmt(s.tomorrow_high, 0)})` : ""}`
+      : `<b>${short(dates[i])}</b><br>${k("var(--series-actual)")}Actual ${fmt(s.actual[i])}` +
+        (s.tabpfn && s.tabpfn[i] != null ? `<br>${k("var(--series-tabpfn)")}TabPFN ${fmt(s.tabpfn[i], 1)}` : "") +
+        (s.baseline && s.baseline[i] != null ? `<br>${k("var(--series-baseline)")}Baseline ${fmt(s.baseline[i], 1)}` : "");
+    tip.classList.remove("hidden");
+    const wrap = $("chartWrap").getBoundingClientRect();
+    const px = (x(i) / W) * wrap.width;
+    tip.style.left = Math.min(Math.max(px - tip.offsetWidth / 2, 0), wrap.width - tip.offsetWidth) + "px";
+    tip.style.top = "0px";
+  };
+  const hide = () => { tip.classList.add("hidden"); cross.setAttribute("visibility", "hidden"); };
+  const hit = svg.querySelector("#hit");
+  hit.addEventListener("pointermove", show);
+  hit.addEventListener("pointerdown", show);
+  hit.addEventListener("pointerleave", hide);
+
+  const rows = dates.map((dt, i) => `<tr><td>${dt}</td><td>${fmt(s.actual[i])}</td><td>${fmt(s.tabpfn && s.tabpfn[i], 1)}</td><td>${fmt(s.baseline && s.baseline[i], 1)}</td></tr>`).join("");
+  $("chartTable").innerHTML = `<tr><th>Date</th><th>Actual</th><th>TabPFN</th><th>Baseline</th></tr>${rows}<tr><td>${d.chart.target_date} (tomorrow)</td><td>-</td><td>${fmt(s.tomorrow, 1)}</td><td>-</td></tr>`;
+}
+
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); return Math.ceil(v / (p / 2)) * (p / 2); }
+function short(iso) { return new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }); }
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+let resizeT;
+window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => state.data && drawChart(), 150); });
+loadConfig();
+run(false);
+</script>
+</body>
+</html>

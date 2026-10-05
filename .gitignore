@@ -5,3 +5,4 @@ __pycache__/
 .env
 .tabpfn_cache/
 orders.csv
+*.bundle
