@@ -133,12 +133,12 @@ footer p { margin: 6px 0; }
   </header>
 
   <div id="sampleBanner" class="banner hidden" role="note">
-    <b>Sample data.</b> These orders are generated for the demo, not real sales. Upload your own CSV below to see your forecast.
+    <b>Sample data.</b> You uploaded one of the demo files. These orders are made up, not real sales.
   </div>
 
   <section class="card" aria-labelledby="uploadTitle">
     <h2 id="uploadTitle">Your orders</h2>
-    <p class="sub">A CSV with <code>date,item,quantity</code> (one row per dish per day). <a href="/api/sample.csv" download>Download the sample</a> to see the format.</p>
+    <p class="sub">A CSV with <code>date,item,quantity</code> (one row per dish per day). No data yet? Download a sample (<a href="/api/sample.csv" download>simple</a> or <a href="/api/sample-complex.csv" download>messy order log</a>), then upload it here.</p>
     <label class="file" id="fileLabel">
       <input type="file" id="file" accept=".csv,text/csv">
       <span id="fileText">Tap to choose a CSV</span>
@@ -151,6 +151,11 @@ footer p { margin: 6px 0; }
       <span id="status" class="small" aria-live="polite"></span>
     </div>
     <div id="error" class="warn hidden" role="alert"></div>
+  </section>
+
+  <section class="card" id="empty" aria-live="polite">
+    <h2>No forecast yet</h2>
+    <p class="sub" style="margin:0">Upload your orders CSV above and tap <b>Forecast banao</b>. Nothing is predicted until you do, and your file never leaves this laptop.</p>
   </section>
 
   <div id="results" class="hidden">
@@ -231,12 +236,17 @@ $("file").addEventListener("change", () => {
   const f = $("file").files[0];
   $("fileText").textContent = f ? f.name : "Tap to choose a CSV";
 });
-$("go").addEventListener("click", () => run(true));
+$("go").addEventListener("click", run);
 
-async function run(fromButton) {
-  const fd = new FormData();
+async function run() {
   const f = $("file").files[0];
-  if (f && fromButton) fd.append("file", f);
+  if (!f) {
+    $("error").textContent = "Pehle apni orders CSV choose karo (choose your CSV first).";
+    $("error").classList.remove("hidden");
+    return;
+  }
+  const fd = new FormData();
+  fd.append("file", f);
   fd.append("tomorrow_special", $("special").checked ? "true" : "false");
   $("go").disabled = true;
   $("error").classList.add("hidden");
@@ -261,6 +271,7 @@ async function run(fromButton) {
 function render(d) {
   state.data = d;
   $("results").classList.remove("hidden");
+  $("empty").classList.add("hidden");
   $("sampleBanner").classList.toggle("hidden", !d.is_sample);
 
   const date = new Date(d.target_date + "T00:00:00");
@@ -389,7 +400,6 @@ function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 let resizeT;
 window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => state.data && drawChart(), 150); });
 loadConfig();
-run(false);
 </script>
 </body>
 </html>

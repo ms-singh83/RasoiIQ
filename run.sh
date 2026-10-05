@@ -20,13 +20,12 @@ if [ ! -x .venv/bin/python ]; then
   .venv/bin/pip install -r requirements.txt
 fi
 
-if [ ! -f orders.csv ] && [ ! -f data/sample_orders.csv ]; then
+if [ ! -f data/sample_orders.csv ]; then
   .venv/bin/python scripts/generate_sample.py
 fi
-if [ -f orders.csv ]; then echo "Using your orders.csv"; else echo "No orders.csv found, using SAMPLE data (data/sample_orders.csv)"; fi
 
 export TABPFN_DISABLE_TELEMETRY=1
 PORT="${PORT:-8000}"
-echo "Open http://localhost:$PORT  (first forecast downloads the 44 MB TabPFN model once, no login)"
+echo "Open http://localhost:$PORT and upload your orders CSV (the first forecast downloads the 44 MB TabPFN model once, no login)"
 ( sleep 3; command -v open >/dev/null 2>&1 && open "http://localhost:$PORT" ) >/dev/null 2>&1 &
 exec .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port "$PORT"

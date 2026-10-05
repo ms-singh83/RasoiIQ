@@ -4,7 +4,7 @@
 
 This was built for the DEV Hacktoberfest 2026 challenge, theme **Build for a Friend**, category **Best Use of TabPFN**.
 
-> **Sample data notice.** Simran's real order history isn't in this repo. Everything you see by default (the page, the screenshots, the numbers below) uses `data/sample_orders.csv`, a 90-day **synthetic** dataset made by `scripts/generate_sample.py`. Drop a real `orders.csv` in the project root, or upload one on the page, to use real data.
+> **Sample data notice.** Simran's real order history isn't in this repo. The screenshots and the numbers below use `data/sample_orders.csv`, a 90-day **synthetic** dataset made by `scripts/generate_sample.py`. The page itself shows **nothing until you upload a CSV**; if you upload one of the sample files, it is labelled as sample data.
 
 **Built with PriorLabs-TabPFN.**
 
@@ -16,7 +16,7 @@ This was built for the DEV Hacktoberfest 2026 challenge, theme **Build for a Fri
 
 Then open http://localhost:8000 (on a Mac it opens by itself).
 
-On the first run, `run.sh` creates `.venv`, installs the pinned packages (about 1 GB, a few minutes), and generates the sample CSV if you don't have an `orders.csv`. The first forecast downloads the 44 MB TabPFN-2 model **once, with no login or token**. After that, everything runs offline.
+On the first run, `run.sh` creates `.venv`, installs the pinned packages (about 1 GB, a few minutes), and generates the sample CSV if it's missing. The page starts empty: upload your orders CSV and tap **Forecast banao** to get a prediction. The first forecast downloads the 44 MB TabPFN-2 model **once, with no login or token**. After that, everything runs offline.
 
 **Requirements:** Python 3.11 or 3.12 (`brew install python@3.11` on a Mac). No GPU, no accounts, no API keys.
 
@@ -33,7 +33,7 @@ The target machine is an **Intel iMac with 8 GB RAM and no GPU**. PyTorch stoppe
 
 ## Your data
 
-Make a CSV like this and save it as `orders.csv` in the project folder, or upload it on the page:
+Make a CSV like this and upload it on the page (nothing is forecast until you do). The page also links to both sample files so you can try it first:
 
 ```csv
 date,item,quantity,notes
@@ -60,7 +60,7 @@ date,item,quantity,notes
 - two days with nothing logged (kitchen closed), and bulk "party order" rows
 - notes with commas inside quotes, and 4 broken rows (blank qty, `two`, a `-2` refund, no dish name)
 
-Upload it on the page, or copy it to `orders.csv`. RasoiIQ merges the spellings, skips the 4 broken rows, treats the 2 empty days as closed, and tells you so.
+Upload it on the page. RasoiIQ merges the spellings, skips the 4 broken rows, treats the 2 empty days as closed, and tells you so.
 
 ## How it works
 

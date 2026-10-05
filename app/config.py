@@ -9,6 +9,7 @@ THEME = os.getenv("THEME", "Build for a Friend")
 ROOT = Path(__file__).resolve().parent.parent
 USER_ORDERS = ROOT / "orders.csv"
 SAMPLE_ORDERS = ROOT / "data" / "sample_orders.csv"
+SAMPLE_COMPLEX = ROOT / "data" / "sample_orders_complex.csv"
 MODEL_CACHE = Path(os.getenv("TABPFN_MODEL_CACHE_DIR", ROOT / ".tabpfn_cache"))
 
 

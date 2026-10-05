@@ -6,7 +6,6 @@ import logging
 import os
 import threading
 from collections import OrderedDict
-from contextlib import asynccontextmanager
 from dataclasses import asdict
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -14,7 +13,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from .config import CITY, FRIEND_NAME, ROOT, SAMPLE_ORDERS, THEME, default_dataset
+from .config import CITY, FRIEND_NAME, ROOT, SAMPLE_COMPLEX, SAMPLE_ORDERS, THEME
 from .data import MAX_UPLOAD_BYTES, DataError, load_orders
 from .festivals import festival_name
 from .forecast import run_forecast
@@ -65,25 +64,7 @@ def _compute(raw: bytes, is_sample: bool, source_name: str, tomorrow_special: bo
         return body
 
 
-def _warm_up() -> None:
-    path, is_sample = default_dataset()
-    if not path.exists():
-        return
-    try:
-        _compute(path.read_bytes(), is_sample, path.name, False)
-        log.info("Warm-up forecast ready for %s", path.name)
-    except Exception:
-        log.exception("Warm-up forecast failed")
-
-
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    if os.getenv("RASOIIQ_WARMUP", "1") == "1":
-        threading.Thread(target=_warm_up, daemon=True).start()
-    yield
-
-
-app = FastAPI(title="RasoiIQ", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="RasoiIQ", version="1.0.0")
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
@@ -99,9 +80,7 @@ def health() -> dict:
 
 @app.get("/api/config")
 def config() -> dict:
-    path, is_sample = default_dataset()
     return {"friend": FRIEND_NAME, "city": CITY, "theme": THEME,
-            "default_dataset": path.name, "default_is_sample": is_sample,
             "gemma_enabled": bool(os.getenv("GEMMA_API_KEY"))}
 
 
@@ -110,16 +89,19 @@ def sample_csv() -> FileResponse:
     return FileResponse(SAMPLE_ORDERS, media_type="text/csv", filename="sample_orders.csv")
 
 
+@app.get("/api/sample-complex.csv")
+def sample_complex_csv() -> FileResponse:
+    return FileResponse(SAMPLE_COMPLEX, media_type="text/csv", filename="sample_orders_complex.csv")
+
+
 @app.post("/api/forecast")
 async def forecast(file: UploadFile | None = File(None), tomorrow_special: bool = Form(False)) -> JSONResponse:
-    if file is not None and file.filename:
-        raw = await file.read(MAX_UPLOAD_BYTES + 1)
-        is_sample, name = False, file.filename
-    else:
-        path, is_sample = default_dataset()
-        if not path.exists():
-            raise HTTPException(404, "No orders.csv or sample data found. Run: python scripts/generate_sample.py")
-        raw, name = path.read_bytes(), path.name
+    # Nothing is forecast until a CSV is uploaded.
+    if file is None or not file.filename:
+        raise HTTPException(400, "Please upload your orders CSV first.")
+    raw = await file.read(MAX_UPLOAD_BYTES + 1)
+    name = file.filename
+    is_sample = name.startswith("sample_orders")
     try:
         body = await run_in_threadpool(_compute, raw, is_sample, name, tomorrow_special)
     except DataError as exc:
