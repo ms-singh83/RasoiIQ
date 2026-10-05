@@ -30,7 +30,7 @@ It runs **entirely on a laptop CPU**. No account, no API key, no cloud, no month
 
 🎥 **Video (90 seconds):** [[ paste YouTube / Loom link, or upload the video to the post ]]
 
-The demo shows: opening the page → tomorrow's forecast for each dish → ticking "festival or party tomorrow?" → uploading a messy CSV → the chart and the accuracy score.
+The demo shows: the empty page → uploading an orders CSV → tomorrow's forecast for each dish → ticking "festival or party tomorrow?" → uploading a messy order log → the chart and the accuracy score.
 
 RasoiIQ is **local-first on purpose** (that's the point, see below), so there's no public URL. It runs on your machine with one command:
 
