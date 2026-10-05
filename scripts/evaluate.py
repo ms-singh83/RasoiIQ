@@ -40,9 +40,14 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, default=0, help="extra synthetic datasets to test")
     ap.add_argument("--seed-start", type=int, default=1000)
+    ap.add_argument("--csv", help="evaluate this CSV instead of orders.csv / the sample")
+    ap.add_argument("--out", default="results", help="report name under reports/ (default: results)")
     a = ap.parse_args()
 
-    path, is_sample = default_dataset()
+    if a.csv:
+        path, is_sample = Path(a.csv), "sample" in Path(a.csv).name
+    else:
+        path, is_sample = default_dataset()
     runs = [evaluate(path.read_bytes(), f"{path.name}{' (sample)' if is_sample else ''}")]
     for s in range(1, a.seeds + 1):
         seed = a.seed_start + s
@@ -54,7 +59,7 @@ def main() -> None:
     import tabpfn, torch  # noqa: E401
     out.update(tabpfn=tabpfn.__version__, torch=torch.__version__)
     (ROOT / "reports").mkdir(exist_ok=True)
-    (ROOT / "reports" / "results.json").write_text(json.dumps(out, indent=1))
+    (ROOT / "reports" / f"{a.out}.json").write_text(json.dumps(out, indent=1))
 
     lines = ["| Dataset | Days x dishes | Baseline MAE | TabPFN MAE | Baseline WAPE | TabPFN WAPE | TabPFN vs baseline |",
              "|---|---|---|---|---|---|---|"]
@@ -71,7 +76,7 @@ def main() -> None:
     lines += ["", f"Holdout: last {HOLDOUT_DAYS} days, one-day-ahead, TabPFN refit every {REFIT_EVERY} days. "
               f"tabpfn {out['tabpfn']}, torch {out['torch']}, Python {out['python']}, {out['platform']}."]
     md = "\n".join(lines) + "\n"
-    (ROOT / "reports" / "results.md").write_text(md)
+    (ROOT / "reports" / f"{a.out}.md").write_text(md)
     print(md)
 
 

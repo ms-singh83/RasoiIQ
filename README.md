@@ -49,6 +49,19 @@ date,item,quantity,notes
 - With more than 1,000 rows, the most recent days are used.
 - Tick **"festival or party tomorrow?"** on the page if you know tomorrow is special.
 
+### A messier sample to try
+
+`data/sample_orders_complex.csv` (made by `scripts/generate_complex_sample.py`, also **synthetic**) looks more like a real order log, so you can see how RasoiIQ copes with untidy data:
+
+- one row per customer order (2,093 rows that add up to 75 days × 6 dishes)
+- columns named `Date, Dish, Qty, Notes`, with day-first dates (`04/10/2026`)
+- the same dish spelled several ways (`dal makhani`, ` DAL MAKHANI `)
+- a new dish (Chole Bhature) added on 1 September
+- two days with nothing logged (kitchen closed), and bulk "party order" rows
+- notes with commas inside quotes, and 4 broken rows (blank qty, `two`, a `-2` refund, no dish name)
+
+Upload it on the page, or copy it to `orders.csv`. RasoiIQ merges the spellings, skips the 4 broken rows, treats the 2 empty days as closed, and tells you so.
+
 ## How it works
 
 ```
@@ -123,6 +136,14 @@ Per dish on the shipped sample (MAE in plates):
 | Rajma Chawal | 13.6 | 4.68 | **4.14** |
 
 Run on: tabpfn 6.4.1, torch 2.2.2, Python 3.11, 4-core Linux CPU (no GPU). A full backtest took about 13 to 19 seconds per dataset.
+
+On the messier per-order sample (`.venv/bin/python scripts/evaluate.py --csv data/sample_orders_complex.csv --out results_complex`):
+
+| Dataset | Days × dishes | Baseline MAE | TabPFN MAE | Baseline WAPE | TabPFN WAPE | TabPFN vs baseline |
+|---|---|---|---|---|---|---|
+| sample_orders_complex.csv | 75 × 6 | 3.58 | **3.00** | 31.9% | **26.8%** | +16.1% |
+
+Most of that gain is one dish. Chole Bhature (added on 1 September and still growing) was 3.28 plates off with TabPFN vs 6.76 with the baseline, because the same-weekday average still counts the weeks before it was on the menu. TabPFN was slightly **worse** than the baseline on Aloo Paratha (3.05 vs 2.95) and Rajma Chawal (3.32 vs 2.98). Full per-dish table: `reports/results_complex.md`.
 
 **What these numbers do and don't say:**
 - TabPFN beat the same-weekday average on every dataset tested, by 8% to 18% in MAE.

@@ -26,6 +26,8 @@ RECIPES: dict[str, dict[str, float]] = {
     "Aloo Paratha": {"Atta": 120, "Aloo": 150, "Butter": 10, "Dahi": 50},
     "Paneer Butter Masala": {"Paneer": 120, "Tomato": 100, "Butter": 15, "Cream": 25, "Kaju": 10},
     "Gajar Halwa": {"Gajar": 250, "Doodh": 200, "Cheeni": 40, "Ghee": 15, "Khoya": 30},
+    "Kadhi Chawal": {"Besan": 30, "Dahi": 150, "Basmati rice": 90, "Onion": 30},
+    "Chole Bhature": {"Kabuli chana": 80, "Maida": 120, "Onion": 40, "Tomato": 50, "Oil": 30},
 }
 
 

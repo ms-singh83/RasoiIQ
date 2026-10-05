@@ -1,0 +1,61 @@
+{
+ "python": "3.11.15",
+ "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39",
+ "holdout_days": 28,
+ "refit_every": 7,
+ "runs": [
+  {
+   "holdout_days": 28,
+   "refit_every_days": 7,
+   "start": "2026-09-07",
+   "end": "2026-10-04",
+   "n_predictions": 162,
+   "baseline": {
+    "mae": 3.58179012345679,
+    "wape": 31.916941694169417
+   },
+   "tabpfn": {
+    "mae": 3.003915704326865,
+    "wape": 26.76756568212058
+   },
+   "per_item": {
+    "Aloo Paratha": {
+     "actual_avg": 15.148148148148149,
+     "baseline_mae": 2.9537037037037037,
+     "tabpfn_mae": 3.04669009314643
+    },
+    "Chole Bhature": {
+     "actual_avg": 10.74074074074074,
+     "baseline_mae": 6.7592592592592595,
+     "tabpfn_mae": 3.277640448676215
+    },
+    "Dal Makhani": {
+     "actual_avg": 11.88888888888889,
+     "baseline_mae": 2.712962962962963,
+     "tabpfn_mae": 2.538039631313748
+    },
+    "Kadhi Chawal": {
+     "actual_avg": 7.407407407407407,
+     "baseline_mae": 2.969135802469136,
+     "tabpfn_mae": 2.8844381968180337
+    },
+    "Paneer Butter Masala": {
+     "actual_avg": 9.296296296296296,
+     "baseline_mae": 3.1203703703703702,
+     "tabpfn_mae": 2.9533057389435946
+    },
+    "Rajma Chawal": {
+     "actual_avg": 12.851851851851851,
+     "baseline_mae": 2.975308641975309,
+     "tabpfn_mae": 3.323380117063169
+    }
+   },
+   "label": "sample_orders_complex.csv (sample)",
+   "seconds": 80.0,
+   "days": 75,
+   "items": 6
+  }
+ ],
+ "tabpfn": "6.4.1",
+ "torch": "2.2.2+cu121"
+}

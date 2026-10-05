@@ -79,3 +79,17 @@ def test_closed_day_does_not_zero_out_features():
     f = build_features(d.daily, d.items)
     nxt = f[(f["date"] == "2026-01-31") & (f["item"] == "Dal")].iloc[0]
     assert nxt["mean_7"] > 5  # average ignores the closed day instead of counting a 0
+
+
+def test_complex_sample_order_log():
+    """The messy per-order sample: aliases, day-first dates, spellings, bad rows, closed days."""
+    from app.config import ROOT
+    d = load_orders((ROOT / "data" / "sample_orders_complex.csv").read_bytes())
+    assert d.items == ["Aloo Paratha", "Chole Bhature", "Dal Makhani", "Kadhi Chawal",
+                       "Paneer Butter Masala", "Rajma Chawal"]
+    assert str(d.start) == "2026-07-22" and str(d.end) == "2026-10-04"
+    assert len(d.daily) == 75 * 6 < MAX_ROWS
+    assert any("Skipped 4" in w for w in d.warnings)
+    assert any("2 day(s)" in w and "closed" in w for w in d.warnings)
+    chole = d.daily[(d.daily["item"] == "Chole Bhature") & (d.daily["date"] < "2026-09-01")]
+    assert (chole["quantity"].fillna(0) == 0).all()  # not on the menu yet
